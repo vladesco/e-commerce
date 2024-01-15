@@ -8,7 +8,7 @@ import (
 )
 
 type LogConfig struct {
-	level LogLevel
+	Level LogLevel
 }
 
 type LogLevel string
@@ -26,13 +26,13 @@ const (
 	PANIC LogLevel = "PANIC"
 )
 
-func New(config LogConfig) *Logger {
+func New(config LogConfig) Logger {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMs
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
-	return &Logger{
+	return Logger{
 		zerolog.New(os.Stdout).
-			Level(convertLogLevelForZeroLogger(config.level)).
+			Level(convertLogLevelForZeroLogger(config.Level)).
 			With().
 			Timestamp().
 			Logger(),

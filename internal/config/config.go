@@ -6,17 +6,17 @@ import (
 	"github.com/vladesco/e-commerce/internal/logger"
 )
 
-type Config struct {
+type AppConfig struct {
 	LogLevel logger.LogLevel `envconfig:"LOG_LEVEL" default:"DEBUG"`
 }
 
-func LoadConfig() (config Config, err error) {
+func LoadAppConfig() (appConfig AppConfig, err error) {
 
 	if err = godotenv.Load(); err != nil {
 		return
 	}
 
-	err = envconfig.Process("", &config)
+	err = envconfig.Process("", &appConfig)
 
 	return
 }
