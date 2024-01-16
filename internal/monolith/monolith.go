@@ -12,8 +12,8 @@ type Monolith struct {
 }
 
 type ModuleConfig struct {
-	Logger    logger.Logger
-	AppConfig config.AppConfig
+	config.AppConfig
+	Logger *logger.Logger
 }
 
 type Module interface {
@@ -36,12 +36,11 @@ func (monolith *Monolith) Bootstrap() (err error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	logger := logger.New(logger.LogConfig{Level: appConfig.LogLevel})
 
-	moduleConfig := ModuleConfig{
-		logger,
-		appConfig,
-	}
-
 	for _, module := range monolith.modules {
+		moduleConfig := ModuleConfig{
+			appConfig,
+			logger,
+		}
 		err = module.Startup(ctx, moduleConfig)
 
 		if err != nil {
