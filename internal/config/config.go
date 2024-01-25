@@ -9,7 +9,6 @@ import (
 type ModuleConfig struct {
 	Environment string
 	Port        int
-	Logger      *logger.Logger
 }
 
 type MonolithConfig struct {

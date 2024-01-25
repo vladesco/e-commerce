@@ -9,7 +9,7 @@ import (
 )
 
 type Module interface {
-	Bootstrap(context.Context, config.ModuleConfig)
+	Bootstrap(context.Context, *logger.Logger, config.ModuleConfig)
 }
 
 type Monolith struct {
@@ -40,12 +40,10 @@ func (monolith *Monolith) Bootstrap() error {
 			return err
 		}
 
-		go module.Bootstrap(ctx, config.ModuleConfig{
+		go module.Bootstrap(ctx, logger, config.ModuleConfig{
 			Environment: monolithConfig.Environment,
 			Port:        port,
-			Logger:      logger,
 		})
-
 	}
 
 	<-ctx.Done()
