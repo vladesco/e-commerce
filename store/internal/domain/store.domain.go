@@ -1,15 +1,19 @@
 package domain
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/stackus/errors"
 )
 
-var (
-	ErrorStoreNameIsMissed              = errors.Wrap(errors.ErrBadRequest, "[STORE]: store name is missed")
-	ErrorStoreIsAlreadyParticipating    = errors.Wrap(errors.ErrBadRequest, "[STORE]: store is already participating")
-	ErrorStoreIsAlreadyNotParticipating = errors.Wrap(errors.ErrBadRequest, "[STORE]: store is already not participating")
-)
+type StoreRepository interface {
+	Save(ctx context.Context, store *Store) error
+	Update(ctx context.Context, store *Store) error
+	Delete(ctx context.Context, storeId string) error
+	Find(ctx context.Context, storeId string) (*Store, error)
+	FindAll(ctx context.Context) ([]*Store, error)
+}
 
 type Store struct {
 	Id            string
@@ -49,3 +53,9 @@ func (store *Store) DisableParticipation() (err error) {
 	store.Participating = false
 	return
 }
+
+var (
+	ErrorStoreNameIsMissed              = errors.Wrap(errors.ErrBadRequest, "[STORE]: store name is missed")
+	ErrorStoreIsAlreadyParticipating    = errors.Wrap(errors.ErrBadRequest, "[STORE]: store is already participating")
+	ErrorStoreIsAlreadyNotParticipating = errors.Wrap(errors.ErrBadRequest, "[STORE]: store is already not participating")
+)

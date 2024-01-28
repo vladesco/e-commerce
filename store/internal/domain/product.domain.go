@@ -1,14 +1,19 @@
 package domain
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/stackus/errors"
 )
 
-var (
-	ErrProductNameIsMissed    = errors.Wrap(errors.ErrBadRequest, "[PRODUCT]: product name is missed")
-	ErrProductPriceIsNegative = errors.Wrap(errors.ErrBadRequest, "[PRODUCT]: product price can`t be negative")
-)
+type ProductRepository interface {
+	Save(ctx context.Context, store *Product) error
+	Update(ctx context.Context, product *Product) error
+	Delete(ctx context.Context, productId string) error
+	Find(ctx context.Context, productId string) (*Product, error)
+	FindAll(ctx context.Context, storeId string) ([]*Product, error)
+}
 
 type Product struct {
 	Id          string
@@ -39,3 +44,8 @@ func CreateProduct(storeId, name, description, sku string, price float64) (*Prod
 
 	return product, nil
 }
+
+var (
+	ErrProductNameIsMissed    = errors.Wrap(errors.ErrBadRequest, "[PRODUCT]: product name is missed")
+	ErrProductPriceIsNegative = errors.Wrap(errors.ErrBadRequest, "[PRODUCT]: product price can`t be negative")
+)

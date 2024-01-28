@@ -14,6 +14,8 @@ type StoreModule struct{}
 
 func (module *StoreModule) Bootstrap(ctx context.Context, logger *logger.Logger, config config.ModuleConfig) {
 
+	logger.Info().Msgf("listening port %d", config.Port)
+
 	storeRepository := repository.NewStoreRepository(logger)
 	productRepository := repository.NewProductRepository(logger)
 
