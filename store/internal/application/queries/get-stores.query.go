@@ -10,17 +10,17 @@ import (
 type GetStoresQuery struct {
 }
 
-type GetStoresQueryHandler struct {
+type GetStoresHandler struct {
 	storeRepository domain.StoreRepository
 }
 
-func NewGetStoresQueryHandler(storeRepository domain.StoreRepository) *GetStoresQueryHandler {
-	return &GetStoresQueryHandler{
+func NewGetStoresHandler(storeRepository domain.StoreRepository) *GetStoresHandler {
+	return &GetStoresHandler{
 		storeRepository,
 	}
 }
 
-func (handler *GetStoresQueryHandler) GetStores(ctx context.Context, query GetStoresQuery) ([]*domain.Store, error) {
+func (handler *GetStoresHandler) GetStores(ctx context.Context, query GetStoresQuery) ([]*domain.Store, error) {
 	storeList, err := handler.storeRepository.FindAll(ctx)
 
 	if err != nil {

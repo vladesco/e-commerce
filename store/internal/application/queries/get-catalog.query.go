@@ -11,22 +11,22 @@ type GetCatalogQuery struct {
 	StoreId string
 }
 
-type GetCatalogQueryHandler struct {
+type GetCatalogHandler struct {
 	productRepository domain.ProductRepository
 }
 
-func NewGetCatalogQueryHandler(productRepository domain.ProductRepository) *GetCatalogQueryHandler {
-	return &GetCatalogQueryHandler{
+func NewGetCatalogHandler(productRepository domain.ProductRepository) *GetCatalogHandler {
+	return &GetCatalogHandler{
 		productRepository,
 	}
 }
 
-func (handler *GetCatalogQueryHandler) GetCatalog(ctx context.Context, query GetCatalogQuery) ([]*domain.Product, error) {
-	products, err := handler.productRepository.FindAll(ctx, query.StoreId)
+func (handler *GetCatalogHandler) GetCatalog(ctx context.Context, query GetCatalogQuery) ([]*domain.Product, error) {
+	productList, err := handler.productRepository.FindAll(ctx, query.StoreId)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting catalog")
 	}
 
-	return products, nil
+	return productList, nil
 }

@@ -1,14 +1,11 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/vladesco/e-commerce/internal/logger"
 	"github.com/vladesco/e-commerce/store/internal/application"
-	"github.com/vladesco/e-commerce/store/internal/application/commands"
 )
 
 type ServerConfig struct {
@@ -28,18 +25,11 @@ func registerStoreHandlers(mux *http.ServeMux, app *application.Application) {
 	mux.HandleFunc("/store", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			body, err := io.ReadAll(r.Body)
-
-			if err != nil {
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-
-			var createStoreDTO CreateStoreDTO
-
-			json.Unmarshal(body, &createStoreDTO)
-
-			app.CreateStoreHandler.CreateStore(r.Context(), commands.CreateStoreCommand(createStoreDTO))
+			createStoreHandler(app, w, r)
+		case http.MethodDelete:
+			disableParticipationHandler(app, w, r)
+		case http.MethodPatch:
+			enableParticipationHandler(app, w, r)
 		default:
 			http.Error(w, "Unsupported Method", http.StatusBadRequest)
 		}
@@ -50,18 +40,9 @@ func registerProductHandlers(mux *http.ServeMux, app *application.Application) {
 	mux.HandleFunc("/product", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
-			body, err := io.ReadAll(r.Body)
-
-			if err != nil {
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
-
-			var createProductDTO CreateProductDTO
-
-			json.Unmarshal(body, &createProductDTO)
-
-			app.CreateProductHandler.CreateProduct(r.Context(), commands.CreateProductCommand(createProductDTO))
+			createProductHandler(app, w, r)
+		case http.MethodDelete:
+			deleteProductHandler(app, w, r)
 		default:
 			http.Error(w, "Unsupported Method", http.StatusBadRequest)
 		}

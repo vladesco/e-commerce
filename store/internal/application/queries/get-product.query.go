@@ -11,17 +11,17 @@ type GetProductQuery struct {
 	ProductId string
 }
 
-type GetProductQueryHandler struct {
+type GetProductHandler struct {
 	productRepository domain.ProductRepository
 }
 
-func NewGetProductQueryHandler(productRepository domain.ProductRepository) *GetProductQueryHandler {
-	return &GetProductQueryHandler{
+func NewGetProductHandler(productRepository domain.ProductRepository) *GetProductHandler {
+	return &GetProductHandler{
 		productRepository,
 	}
 }
 
-func (handler *GetProductQueryHandler) GetProduct(ctx context.Context, query GetProductQuery) (*domain.Product, error) {
+func (handler *GetProductHandler) GetProduct(ctx context.Context, query GetProductQuery) (*domain.Product, error) {
 	product, err := handler.productRepository.Find(ctx, query.ProductId)
 
 	if err != nil {

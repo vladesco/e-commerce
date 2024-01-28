@@ -11,17 +11,17 @@ type GetStoreQuery struct {
 	StoreId string
 }
 
-type GetStoreQueryHandler struct {
+type GetStoreHandler struct {
 	storeRepository domain.StoreRepository
 }
 
-func NewGetStoreQueryHandler(storeRepository domain.StoreRepository) *GetStoreQueryHandler {
-	return &GetStoreQueryHandler{
+func NewGetStoreHandler(storeRepository domain.StoreRepository) *GetStoreHandler {
+	return &GetStoreHandler{
 		storeRepository,
 	}
 }
 
-func (handler *GetStoreQueryHandler) GetStore(ctx context.Context, query GetStoreQuery) (*domain.Store, error) {
+func (handler *GetStoreHandler) GetStore(ctx context.Context, query GetStoreQuery) (*domain.Store, error) {
 	store, err := handler.storeRepository.Find(ctx, query.StoreId)
 
 	if err != nil {

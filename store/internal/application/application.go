@@ -15,15 +15,15 @@ type applicationCommands struct {
 	*commands.CreateProductHandler
 	*commands.DeleteProductHandler
 	*commands.CreateStoreHandler
-	*commands.EnableParticipationCommandHandler
-	*commands.DisableParticipationCommandHandler
+	*commands.EnableParticipationHandler
+	*commands.DisableParticipationHandler
 }
 
 type applicationQueries struct {
-	*queries.GetCatalogQueryHandler
-	*queries.GetProductQueryHandler
-	*queries.GetStoreQueryHandler
-	*queries.GetStoresQueryHandler
+	*queries.GetCatalogHandler
+	*queries.GetProductHandler
+	*queries.GetStoreHandler
+	*queries.GetStoresHandler
 }
 
 func NewApplication(storeRepository domain.StoreRepository, productRepository domain.ProductRepository) *Application {
@@ -32,14 +32,14 @@ func NewApplication(storeRepository domain.StoreRepository, productRepository do
 			commands.NewCreateProductHandler(storeRepository, productRepository),
 			commands.NewDeleteProductHandler(productRepository),
 			commands.NewCreateStoreHandler(storeRepository),
-			commands.NewEnableParticipationCommandHandler(storeRepository),
-			commands.NewDisableParticipationCommandHandler(storeRepository),
+			commands.NewEnableParticipationHandler(storeRepository),
+			commands.NewDisableParticipationHandler(storeRepository),
 		},
 		applicationQueries{
-			queries.NewGetCatalogQueryHandler(productRepository),
-			queries.NewGetProductQueryHandler(productRepository),
-			queries.NewGetStoreQueryHandler(storeRepository),
-			queries.NewGetStoresQueryHandler(storeRepository),
+			queries.NewGetCatalogHandler(productRepository),
+			queries.NewGetProductHandler(productRepository),
+			queries.NewGetStoreHandler(storeRepository),
+			queries.NewGetStoresHandler(storeRepository),
 		},
 	}
 }

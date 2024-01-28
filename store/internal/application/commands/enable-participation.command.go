@@ -11,17 +11,17 @@ type EnableParticipationCommand struct {
 	StoreId string
 }
 
-type EnableParticipationCommandHandler struct {
+type EnableParticipationHandler struct {
 	storeRepository domain.StoreRepository
 }
 
-func NewEnableParticipationCommandHandler(storeRepository domain.StoreRepository) *EnableParticipationCommandHandler {
-	return &EnableParticipationCommandHandler{
+func NewEnableParticipationHandler(storeRepository domain.StoreRepository) *EnableParticipationHandler {
+	return &EnableParticipationHandler{
 		storeRepository,
 	}
 }
 
-func (handler *EnableParticipationCommandHandler) EnableParticipation(ctx context.Context, command EnableParticipationCommand) error {
+func (handler *EnableParticipationHandler) EnableParticipation(ctx context.Context, command EnableParticipationCommand) error {
 	store, err := handler.storeRepository.Find(ctx, command.StoreId)
 
 	if err != nil {
