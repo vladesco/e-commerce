@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/stackus/errors"
+	"github.com/vladesco/e-commerce/internal/ddd"
 	"github.com/vladesco/e-commerce/store/internal/domain"
 )
 
@@ -13,11 +14,13 @@ type EnableParticipationCommand struct {
 
 type EnableParticipationHandler struct {
 	storeRepository domain.StoreRepository
+	domainPublisher ddd.EventPublisher
 }
 
-func NewEnableParticipationHandler(storeRepository domain.StoreRepository) *EnableParticipationHandler {
+func NewEnableParticipationHandler(storeRepository domain.StoreRepository, domainPublisher ddd.EventPublisher) *EnableParticipationHandler {
 	return &EnableParticipationHandler{
 		storeRepository,
+		domainPublisher,
 	}
 }
 
@@ -33,5 +36,9 @@ func (handler *EnableParticipationHandler) EnableParticipation(ctx context.Conte
 
 	}
 
-	return errors.Wrap(handler.storeRepository.Update(ctx, store), "error updating store")
+	if err = handler.storeRepository.Update(ctx, store); err != nil {
+		return errors.Wrap(err, "error updating store")
+	}
+
+	return errors.Wrap(handler.domainPublisher.Publish(ctx, store.GetEvents()...), "error publishing store events")
 }

@@ -18,7 +18,7 @@ type EventDispatcher struct {
 	handlers map[string][]EventHandler
 }
 
-func newEventDispatcher() *EventDispatcher {
+func NewEventDispatcher() *EventDispatcher {
 	return &EventDispatcher{
 		handlers: make(map[string][]EventHandler),
 	}
@@ -26,13 +26,14 @@ func newEventDispatcher() *EventDispatcher {
 
 func (eventDispatcher *EventDispatcher) Subscribe(event Event, handler EventHandler) {
 	eventDispatcher.mutex.Lock()
-	defer newEventDispatcher().mutex.Unlock()
+	defer eventDispatcher.mutex.Unlock()
 
 	eventName := event.Name()
 	eventDispatcher.handlers[eventName] = append(eventDispatcher.handlers[eventName], handler)
 }
 
 func (eventDispatcher *EventDispatcher) Publish(ctx context.Context, events ...Event) error {
+
 	for _, event := range events {
 		eventName := event.Name()
 

@@ -1,27 +1,19 @@
 package domain
 
 import (
-	"context"
-
 	"github.com/google/uuid"
 	"github.com/stackus/errors"
+	"github.com/vladesco/e-commerce/internal/ddd"
 )
 
-type ProductRepository interface {
-	Save(ctx context.Context, store *Product) error
-	Update(ctx context.Context, product *Product) error
-	Delete(ctx context.Context, productId string) error
-	Find(ctx context.Context, productId string) (*Product, error)
-	FindAll(ctx context.Context, storeId string) ([]*Product, error)
-}
-
 type Product struct {
-	Id          string
-	StoreId     string
-	Name        string
-	Description string
-	SKU         string
-	Price       float64
+	ddd.AggregateBase
+	id          string
+	storeId     string
+	name        string
+	description string
+	sku         string
+	price       float64
 }
 
 func CreateProduct(storeId, name, description, sku string, price float64) (*Product, error) {
@@ -34,6 +26,7 @@ func CreateProduct(storeId, name, description, sku string, price float64) (*Prod
 	}
 
 	product := &Product{
+		ddd.CrateAggregate(),
 		uuid.NewString(),
 		storeId,
 		name,
@@ -42,7 +35,15 @@ func CreateProduct(storeId, name, description, sku string, price float64) (*Prod
 		price,
 	}
 
+	product.AddEvent(&ProductCreated{product})
+
 	return product, nil
+}
+
+func (product *Product) Remove() error {
+	product.AddEvent(&ProductDeleted{product})
+
+	return nil
 }
 
 var (

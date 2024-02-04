@@ -1,24 +1,14 @@
 package domain
 
 import (
-	"context"
-
-	"github.com/google/uuid"
 	"github.com/stackus/errors"
+	"github.com/vladesco/e-commerce/internal/ddd"
 )
 
-type StoreRepository interface {
-	Save(ctx context.Context, store *Store) error
-	Update(ctx context.Context, store *Store) error
-	Delete(ctx context.Context, storeId string) error
-	Find(ctx context.Context, storeId string) (*Store, error)
-	FindAll(ctx context.Context) ([]*Store, error)
-}
-
 type Store struct {
-	Id            string
-	Name          string
-	Participating bool
+	ddd.AggregateBase
+	name          string
+	participating bool
 }
 
 func CreateStore(name string) (*Store, error) {
@@ -27,30 +17,43 @@ func CreateStore(name string) (*Store, error) {
 	}
 
 	store := &Store{
-		uuid.NewString(),
+		ddd.CrateAggregate(),
 		name,
 		false,
 	}
+
+	store.AddEvent(&StoreCreated{
+		store,
+	})
 
 	return store, nil
 }
 
 func (store *Store) EnableParticipation() (err error) {
-	if store.Participating {
+	if store.participating {
 		return ErrorStoreIsAlreadyParticipating
 	}
 
-	store.Participating = true
+	store.participating = true
+
+	store.AddEvent(&StoreParticipationEnabled{
+		store,
+	})
 
 	return
 }
 
 func (store *Store) DisableParticipation() (err error) {
-	if !store.Participating {
+	if !store.participating {
 		return ErrorStoreIsAlreadyNotParticipating
 	}
 
-	store.Participating = false
+	store.participating = false
+
+	store.AddEvent(&StoreParticipationDisabled{
+		store,
+	})
+
 	return
 }
 

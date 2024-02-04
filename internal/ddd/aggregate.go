@@ -1,5 +1,7 @@
 package ddd
 
+import "github.com/google/uuid"
+
 type Aggregate interface {
 	Entity
 	AddEvent(event Event)
@@ -21,4 +23,11 @@ func (aggregate *AggregateBase) AddEvent(event Event) {
 
 func (aggregate *AggregateBase) GetEvents() []Event {
 	return aggregate.events
+}
+
+func CrateAggregate() AggregateBase {
+	return AggregateBase{
+		id:     uuid.NewString(),
+		events: []Event{},
+	}
 }

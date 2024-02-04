@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/stackus/errors"
+	"github.com/vladesco/e-commerce/internal/ddd"
 	"github.com/vladesco/e-commerce/store/internal/domain"
 )
 
@@ -18,12 +19,14 @@ type CreateProductCommand struct {
 type CreateProductHandler struct {
 	storeRepository   domain.StoreRepository
 	productRepository domain.ProductRepository
+	domainPublisher   ddd.EventPublisher
 }
 
-func NewCreateProductHandler(storeRepository domain.StoreRepository, productRepository domain.ProductRepository) *CreateProductHandler {
+func NewCreateProductHandler(storeRepository domain.StoreRepository, productRepository domain.ProductRepository, domainPublisher ddd.EventPublisher) *CreateProductHandler {
 	return &CreateProductHandler{
 		storeRepository,
 		productRepository,
+		domainPublisher,
 	}
 }
 
@@ -40,5 +43,11 @@ func (handler *CreateProductHandler) CreateProduct(ctx context.Context, command 
 		return errors.Wrap(err, "error creating product")
 	}
 
-	return errors.Wrap(handler.productRepository.Save(ctx, product), "error saving product")
+	err = handler.productRepository.Save(ctx, product)
+
+	if err != nil {
+		return errors.Wrap(err, "error saving product")
+	}
+
+	return errors.Wrap(handler.domainPublisher.Publish(ctx, product.GetEvents()...), "error publishing product events")
 }
