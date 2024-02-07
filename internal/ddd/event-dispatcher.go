@@ -5,40 +5,46 @@ import (
 	"sync"
 )
 
-type EventSubscriber interface {
-	Subscribe(event Event, handler EventHandler)
-}
+type (
+	EventHandler[T Event] interface {
+		HandleEvent(ctx context.Context, event T) error
+	}
 
-type EventPublisher interface {
-	Publish(ctx context.Context, events ...Event) error
-}
+	EventHandlerFunc[T Event] func(ctx context.Context, event T) error
 
-type EventDispatcher struct {
-	mutex    sync.Mutex
-	handlers map[string][]EventHandler
-}
+	EventSubscriber[T Event] interface {
+		Subscribe(eventName string, handler EventHandler[T])
+	}
 
-func NewEventDispatcher() *EventDispatcher {
-	return &EventDispatcher{
-		handlers: make(map[string][]EventHandler),
+	EventPublisher[T Event] interface {
+		Publish(ctx context.Context, events ...T) error
+	}
+
+	EventDispatcher[T Event] struct {
+		mutex    sync.Mutex
+		handlers map[string][]EventHandler[T]
+	}
+)
+
+func NewEventDispatcher[T Event]() *EventDispatcher[T] {
+	return &EventDispatcher[T]{
+		handlers: make(map[string][]EventHandler[T]),
 	}
 }
 
-func (eventDispatcher *EventDispatcher) Subscribe(event Event, handler EventHandler) {
-	eventDispatcher.mutex.Lock()
-	defer eventDispatcher.mutex.Unlock()
+func (dispatcher *EventDispatcher[T]) Subscribe(eventName string, handler EventHandler[T]) {
+	dispatcher.mutex.Lock()
+	defer dispatcher.mutex.Unlock()
 
-	eventName := event.Name()
-	eventDispatcher.handlers[eventName] = append(eventDispatcher.handlers[eventName], handler)
+	dispatcher.handlers[eventName] = append(dispatcher.handlers[eventName], handler)
 }
 
-func (eventDispatcher *EventDispatcher) Publish(ctx context.Context, events ...Event) error {
-
+func (dispatcher *EventDispatcher[T]) Publish(ctx context.Context, events ...T) error {
 	for _, event := range events {
-		eventName := event.Name()
+		eventName := event.GetName()
 
-		for _, handler := range eventDispatcher.handlers[eventName] {
-			err := handler(ctx, event)
+		for _, handler := range dispatcher.handlers[eventName] {
+			err := handler.HandleEvent(ctx, event)
 
 			if err != nil {
 				return err
@@ -48,3 +54,13 @@ func (eventDispatcher *EventDispatcher) Publish(ctx context.Context, events ...E
 
 	return nil
 }
+
+func (function EventHandlerFunc[T]) HandleEvent(ctx context.Context, event T) error {
+	return function(ctx, event)
+}
+
+// CHECKS
+var _ interface {
+	EventSubscriber[Event]
+	EventPublisher[Event]
+} = (*EventDispatcher[Event])(nil)
