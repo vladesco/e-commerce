@@ -1,9 +1,8 @@
 package ddd
 
 const (
-	AggregateIDKey      = "aggregate-id"
-	AggregateNameKey    = "aggregate-name"
-	AggregateVersionKey = "aggregate-version"
+	aggregateIdKey   = "aggregate-id"
+	aggregateNameKey = "aggregate-name"
 )
 
 type (
@@ -16,7 +15,6 @@ type (
 		Event
 		GetAggregateId() string
 		GetAggregateName() string
-		GetAggregateVersion() int
 	}
 
 	aggregateEvent struct {
@@ -38,8 +36,8 @@ func (aggregate *Aggregate) SetEvents(events []AggregateEvent) { aggregate.event
 func (aggregate *Aggregate) AddEvent(eventName string, payload EventPayload, options ...EventOption) {
 	options = append(options,
 		Metadata{
-			AggregateNameKey: aggregate.name,
-			AggregateIDKey:   aggregate.id,
+			aggregateIdKey:   aggregate.id,
+			aggregateNameKey: aggregate.name,
 		})
 
 	aggregate.events = append(
@@ -51,13 +49,10 @@ func (aggregate *Aggregate) AddEvent(eventName string, payload EventPayload, opt
 }
 
 func (event *aggregateEvent) GetAggregateId() string {
-	return event.metadata.Get(AggregateIDKey).(string)
+	return event.metadata.Get(aggregateIdKey).(string)
 }
 func (event *aggregateEvent) GetAggregateName() string {
-	return event.metadata.Get(AggregateNameKey).(string)
-}
-func (event *aggregateEvent) GetAggregateVersion() int {
-	return event.metadata.Get(AggregateVersionKey).(int)
+	return event.metadata.Get(aggregateNameKey).(string)
 }
 
 // CHECKS
