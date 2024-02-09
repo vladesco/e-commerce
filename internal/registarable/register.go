@@ -22,7 +22,7 @@ func RegisterKey(registry Registry, key string, value any, serializer Serializer
 	valueType := reflect.TypeOf(value)
 
 	if valueType.Kind() == reflect.Pointer {
-		value = valueType.Elem()
+		valueType = valueType.Elem()
 	}
 
 	return registry.register(key, func() any {
